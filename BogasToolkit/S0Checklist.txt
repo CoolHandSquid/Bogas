@@ -1,0 +1,20 @@
+Bogas
+Buffer Overflow Generater Automatic Semi
+null	= "written by coolhandsquid"
+
+The purpose of this document is to give you a scratch pad and a general outline of what is going in in SBufferOverflowtoolkit.
+I would recomend you open two SSH terminals, keeping this one up to write to and the other to run the programs.
+
+
+
+Step			Goal				Value
+-------------------------------------------------------------------------------
+S1Fuzzer		General Crash Area		5500
+S2CrashReplication	General Crash Area Verification	X
+S3CrashLocation		Locate Crash			5091
+S4EipOverwriter		Verify You Can Overwrite EIP	X
+S5ShellcodeSpace	Find space for shellcode	1404
+S6BadChars		Find bad characters		\x00\x0a\x0d
+S7RegisterAddress	Find a register address		7c b3 2d 69
+S8ShellCodeGen		Generate a payload		X
+S9ExploitGen		Generate and RUN exploit	X			 
